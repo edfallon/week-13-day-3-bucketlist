@@ -14,7 +14,7 @@ Request.prototype.get = function(next) {
   request.send()
 };
 
-Request.prototype.post = function(quote, next) {
+Request.prototype.post = function(country, next) {
   // console.log(quote);
   const request = new XMLHttpRequest();
   request.open("POST", this.url);
@@ -24,7 +24,7 @@ Request.prototype.post = function(quote, next) {
     const responseBody = JSON.parse(this.response);
     next(responseBody);
   })
-  request.send(JSON.stringify(quote));
+  request.send(JSON.stringify(country));
 };
 
 Request.prototype.delete = function (next) {

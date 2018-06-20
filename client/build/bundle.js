@@ -68,19 +68,45 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 const Request = __webpack_require__(1);
+const CountryView = __webpack_require__(3);
 
-// const quoteView = new QuoteView();
+const countryView = new CountryView();
 const requestToRemoteAPI = new Request('https://restcountries.eu/rest/v2/all');
+const requestToMongodb = new Request('http://localhost:3000/api/countries')
 
 const appStart = function(){
   requestToRemoteAPI.get(getAllCountries);
+  requestToMongodb.get(populateBucketlist);
 }
 
 const getAllCountries = function(allCountries){
   populateDropdown(allCountries);
+  const dropdownList = document.querySelector("#countries-dropdown");
+  dropdownList.addEventListener("change", function(){
+    const selectedDropdownCountry = allCountries[this.value];
+    handleAddToBucketList(selectedDropdownCountry);
+  })
 }
-const populateDropdown = function(countries){
 
+const handleAddToBucketList = function(country){
+  requestToMongodb.post(country, requestToSaveCountry)
+}
+
+const requestToSaveCountry = function(savedCountry){
+  countryView.addCountry(savedCountry);
+}
+
+const populateBucketlist = function(allCountriesFromMongo){
+  const ul = document.querySelector("#selected-countries");
+  allCountriesFromMongo.forEach(function(country){
+    const nameLi = document.createElement('li');
+    nameLi.textContent = country.name;
+    ul.appendChild(nameLi);
+  })
+
+}
+
+const populateDropdown = function(countries){
  const dropdown = document.querySelector('#countries-dropdown');
  countries.forEach(function(country){
    const option = document.createElement('option');
@@ -113,7 +139,7 @@ Request.prototype.get = function(next) {
   request.send()
 };
 
-Request.prototype.post = function(quote, next) {
+Request.prototype.post = function(country, next) {
   // console.log(quote);
   const request = new XMLHttpRequest();
   request.open("POST", this.url);
@@ -123,7 +149,7 @@ Request.prototype.post = function(quote, next) {
     const responseBody = JSON.parse(this.response);
     next(responseBody);
   })
-  request.send(JSON.stringify(quote));
+  request.send(JSON.stringify(country));
 };
 
 Request.prototype.delete = function (next) {
@@ -137,6 +163,23 @@ Request.prototype.delete = function (next) {
 };
 
 module.exports = Request;
+
+
+/***/ }),
+/* 2 */,
+/* 3 */
+/***/ (function(module, exports) {
+
+var CountryView = function(){
+  this.country = [];
+}
+
+CountryView.prototype.addCountry = function(country) {
+  this.country.push(country);
+
+}
+
+module.exports = CountryView;
 
 
 /***/ })
