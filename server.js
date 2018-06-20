@@ -9,6 +9,7 @@ server.use(express.static("client/build"));
 
 const MongoClient = require("mongodb").MongoClient;
 
+
 MongoClient.connect("mongodb://localhost:27017",
 function(err, client){
   if(err){// checking if there is an error
@@ -19,6 +20,18 @@ function(err, client){
 const db = client.db("bucket_list");//connecting to the database
  console.log("Connected to database!");
 
+  //post
+ server.post("/api/countries", function(req, res, next){
+    const bucketlistCountries = db.collection("countries");
+    const countryToSave = req.body;
+    bucketlistCountries.save(countryToSave, function(err, result){
+      if(err) next(err);
+      res.status(204);
+      res.json(result.ops[0])
+      console.log("saved to database!");
+    })
+  });
+
  //get
 server.get("/api/countries", function(req, res, next){
   const bucketlistCountries = db.collection("countries");
@@ -27,18 +40,6 @@ server.get("/api/countries", function(req, res, next){
     res.json(allCountries);
   });
 });
-
- //post
-server.post("/api/countries", function(req, res, next){
-   const bucketlistCountries = db.collection("countries");
-   const countryToSave = req.body;
-   bucketlistCountries.save(countryToSave, function(err, result){
-     if(err) next(err);
-     res.status(204);
-     res.json(result.ops[0])
-     console.log(“saved to database!“);
-   })
- });
 
  //delete
  server.delete("/api/countries", function(req, res, next){

@@ -65,8 +65,78 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const Request = __webpack_require__(1);
+
+// const quoteView = new QuoteView();
+const requestToRemoteAPI = new Request('https://restcountries.eu/rest/v2/all');
+
+const appStart = function(){
+  requestToRemoteAPI.get(getAllCountries);
+}
+
+const getAllCountries = function(allCountries){
+  populateDropdown(allCountries);
+}
+const populateDropdown = function(countries){
+
+ const dropdown = document.querySelector('#countries-dropdown');
+ countries.forEach(function(country){
+   const option = document.createElement('option');
+   option.value = countries.indexOf(country);
+   option.textContent = country.name;
+   dropdown.appendChild(option);
+ });
+}
+
+window.addEventListener('load', appStart);
+
+
+/***/ }),
+/* 1 */
 /***/ (function(module, exports) {
 
+const Request = function(url) {
+  this.url = url;
+}
+
+Request.prototype.get = function(next) {
+  const request = new XMLHttpRequest();
+  request.open("GET", this.url);
+  request.addEventListener("load", function(){
+    if (this.status !== 200) return;
+
+    const responseBody = JSON.parse(this.response);
+    next(responseBody);
+  });
+  request.send()
+};
+
+Request.prototype.post = function(quote, next) {
+  // console.log(quote);
+  const request = new XMLHttpRequest();
+  request.open("POST", this.url);
+  request.setRequestHeader("Content-Type", "application/json");//tell it what kind of data it's getting
+  request.addEventListener("load", function(){
+    if (this.status !== 201) return;
+    const responseBody = JSON.parse(this.response);
+    next(responseBody);
+  })
+  request.send(JSON.stringify(quote));
+};
+
+Request.prototype.delete = function (next) {
+  const request = new XMLHttpRequest();
+  request.open("DELETE", this.url);
+  request.addEventListener('load', function(){
+    if (this.status !== 204) return;
+    next();
+  })
+  request.send();
+};
+
+module.exports = Request;
 
 
 /***/ })
