@@ -77,6 +77,9 @@ const requestToMongodb = new Request('http://localhost:3000/api/countries')
 const appStart = function(){
   requestToRemoteAPI.get(getAllCountries);
   requestToMongodb.get(populateBucketlist);
+
+  const createDeleteButton = document.querySelector("#deleteButton");
+  createDeleteButton.addEventListener("click", handleDeleteButttonClick);
 }
 
 const getAllCountries = function(allCountries){
@@ -110,10 +113,20 @@ const populateDropdown = function(countries){
  const dropdown = document.querySelector('#countries-dropdown');
  countries.forEach(function(country){
    const option = document.createElement('option');
+   option.innerHtml = "";
    option.value = countries.indexOf(country);
    option.textContent = country.name;
    dropdown.appendChild(option);
  });
+}
+
+const handleDeleteButttonClick = function(event){
+  event.preventDefault();
+  requestToMongodb.delete(deleteRequestComplete);
+}
+
+const deleteRequestComplete = function(){
+  countryView.clear();
 }
 
 window.addEventListener('load', appStart);
@@ -177,6 +190,12 @@ var CountryView = function(){
 CountryView.prototype.addCountry = function(country) {
   this.country.push(country);
 
+}
+
+CountryView.prototype.clear = function(country) {
+  this.country = [];
+  const ul = document.querySelector('#selected-countries');
+  ul.innerHTML = '';
 }
 
 module.exports = CountryView;
