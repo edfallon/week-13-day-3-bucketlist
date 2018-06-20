@@ -25,13 +25,20 @@ server.get("/api/countries", function(req, res, next){
   countriesList.find().toArray(function(err, allCountries){
     if (err) next(err);
     res.json(allCountries);
-
   });
-
-
-})
+});
 
  //post
+server.post("/api/countries", function(req, res, next){
+   const countriesList = db.collection("countries");
+   const countryToSave = req.body;
+   countriesList.save(countryToSave, function(err, result){
+     if(err) next(err);
+     res.status(204);
+     res.json(result.ops[0])
+     console.log(“saved to database!“);
+   })
+ });
 
  //delete
 
