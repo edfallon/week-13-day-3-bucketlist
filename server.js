@@ -21,8 +21,8 @@ const db = client.db("bucket_list");//connecting to the database
 
  //get
 server.get("/api/countries", function(req, res, next){
-  const countriesList = db.collection("countries");
-  countriesList.find().toArray(function(err, allCountries){
+  const bucketlistCountries = db.collection("countries");
+  bucketlistCountries.find().toArray(function(err, allCountries){
     if (err) next(err);
     res.json(allCountries);
   });
@@ -30,9 +30,9 @@ server.get("/api/countries", function(req, res, next){
 
  //post
 server.post("/api/countries", function(req, res, next){
-   const countriesList = db.collection("countries");
+   const bucketlistCountries = db.collection("countries");
    const countryToSave = req.body;
-   countriesList.save(countryToSave, function(err, result){
+   bucketlistCountries.save(countryToSave, function(err, result){
      if(err) next(err);
      res.status(204);
      res.json(result.ops[0])
@@ -42,15 +42,12 @@ server.post("/api/countries", function(req, res, next){
 
  //delete
  server.delete("/api/countries", function(req, res, next){
-   const countriesList = db.collection("countries");
-   countriesList.remove({}, function(err, result){
+   const bucketlistCountries = db.collection("countries");
+   bucketlistCountries.remove({}, function(err, result){
      if (err) next(err);
      res.status(204).send();
    })
  });
-
-
-
 
 
 server.listen(3000, function(){// starts the server when you are econnected to the database
