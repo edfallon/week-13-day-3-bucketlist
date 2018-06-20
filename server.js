@@ -19,6 +19,22 @@ function(err, client){
 const db = client.db("bucket_list");//connecting to the database
  console.log("Connected to database!");
 
+ //get
+server.get("/api/countries", function(req, res, next){
+  const countriesList = db.collection("countries");
+  countriesList.find().toArray(function(err, allCountries){
+    if (err) next(err);
+    res.json(allCountries);
+
+  });
+
+
+})
+
+ //post
+
+ //delete
+
 
 
 
