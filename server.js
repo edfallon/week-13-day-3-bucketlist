@@ -41,6 +41,13 @@ server.post("/api/countries", function(req, res, next){
  });
 
  //delete
+ server.delete("/api/countries", function(req, res, next){
+   const countriesList = db.collection("countries");
+   countriesList.remove({}, function(err, result){
+     if (err) next(err);
+     res.status(204).send();
+   })
+ });
 
 
 
