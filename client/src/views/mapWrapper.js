@@ -13,7 +13,7 @@ const MapWrapper = function(element, coords, zoom){
 
 //writes move to function which takes in a co-ord
 MapWrapper.prototype.moveTo = function(latlng, flag){
-   this.map.flyTo(latlng, 6);
+   this.map.flyTo(latlng, 4);
    L.marker(latlng).addTo(this.map).bindPopup(flag).openPopup()
    //adds in a pop up with hyperlink to the wiki page
 }

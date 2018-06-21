@@ -86,7 +86,7 @@ const appStart = function(){
 
   const mapDiv = document.getElementById("main-map");
   const glasgow = [55.854979, -4.243281];
-  const zoomLevel = 1;
+  const zoomLevel = 2;
   mainMap = new MapWrapper(mapDiv, glasgow, zoomLevel);
 }
 
@@ -101,7 +101,11 @@ const getAllCountries = function(allCountries){
     selectedDropdownCountry = allCountries[this.value];
     const selectedCountryCoords = selectedDropdownCountry.latlng;
     const selectedCountryFlag = selectedDropdownCountry.flag;
-    mainMap.moveTo(selectedCountryCoords, selectedCountryFlag);
+    const flagImage = document.createElement('img')
+    flagImage.src = selectedCountryFlag
+    flagImage.width = 100;
+    mainMap.moveTo(selectedCountryCoords, flagImage);
+
   })
   const addButton = document.querySelector('#add');
   addButton.addEventListener("click", function(){
@@ -244,7 +248,7 @@ const MapWrapper = function(element, coords, zoom){
 
 //writes move to function which takes in a co-ord
 MapWrapper.prototype.moveTo = function(latlng, flag){
-   this.map.flyTo(latlng, 6);
+   this.map.flyTo(latlng, 4);
    L.marker(latlng).addTo(this.map).bindPopup(flag).openPopup()
    //adds in a pop up with hyperlink to the wiki page
 }

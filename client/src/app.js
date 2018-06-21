@@ -17,7 +17,7 @@ const appStart = function(){
 
   const mapDiv = document.getElementById("main-map");
   const glasgow = [55.854979, -4.243281];
-  const zoomLevel = 1;
+  const zoomLevel = 2;
   mainMap = new MapWrapper(mapDiv, glasgow, zoomLevel);
 }
 
@@ -32,7 +32,11 @@ const getAllCountries = function(allCountries){
     selectedDropdownCountry = allCountries[this.value];
     const selectedCountryCoords = selectedDropdownCountry.latlng;
     const selectedCountryFlag = selectedDropdownCountry.flag;
-    mainMap.moveTo(selectedCountryCoords, selectedCountryFlag);
+    const flagImage = document.createElement('img')
+    flagImage.src = selectedCountryFlag
+    flagImage.width = 100;
+    mainMap.moveTo(selectedCountryCoords, flagImage);
+
   })
   const addButton = document.querySelector('#add');
   addButton.addEventListener("click", function(){
