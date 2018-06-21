@@ -1,9 +1,12 @@
 const Request = require('./services/request.js');
 const CountryView = require('./views/countryView');
+const MapWrapper = require('./views/mapWrapper.js');
+
 
 const countryView = new CountryView();
 const requestToRemoteAPI = new Request('https://restcountries.eu/rest/v2/all');
-const requestToMongodb = new Request('http://localhost:3000/api/countries')
+const requestToMongodb = new Request('http://localhost:3000/api/countries');
+
 
 const appStart = function(){
   requestToRemoteAPI.get(getAllCountries);
@@ -11,16 +14,34 @@ const appStart = function(){
 
   const createDeleteButton = document.querySelector("#deleteButton");
   createDeleteButton.addEventListener("click", handleDeleteButttonClick);
+
+  const mapDiv = document.getElementById("main-map");
+  const glasgow = [55.854979, -4.243281];
+  const zoomLevel = 1;
+  mainMap = new MapWrapper(mapDiv, glasgow, zoomLevel);
 }
+
+
+
+
 
 const getAllCountries = function(allCountries){
   populateDropdown(allCountries);
   const dropdownList = document.querySelector("#countries-dropdown");
   dropdownList.addEventListener("change", function(){
-    const selectedDropdownCountry = allCountries[this.value];
+    selectedDropdownCountry = allCountries[this.value];
+    const selectedCountryCoords = selectedDropdownCountry.latlng;
+    const selectedCountryFlag = selectedDropdownCountry.flag;
+    mainMap.moveTo(selectedCountryCoords, selectedCountryFlag);
+  })
+  const addButton = document.querySelector('#add');
+  addButton.addEventListener("click", function(){
     handleAddToBucketList(selectedDropdownCountry);
   })
+
 }
+
+
 
 const handleAddToBucketList = function(country){
   requestToMongodb.post(country, requestToSaveCountry)

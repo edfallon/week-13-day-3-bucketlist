@@ -1,0 +1,7 @@
+#main-map {
+ height: 600px;
+ width: 45% ;
+ position: relative;
+ display: inline-block;
+ float: right;
+}

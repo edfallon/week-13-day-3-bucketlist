@@ -69,10 +69,13 @@
 
 const Request = __webpack_require__(1);
 const CountryView = __webpack_require__(3);
+const MapWrapper = __webpack_require__(5);
+
 
 const countryView = new CountryView();
 const requestToRemoteAPI = new Request('https://restcountries.eu/rest/v2/all');
-const requestToMongodb = new Request('http://localhost:3000/api/countries')
+const requestToMongodb = new Request('http://localhost:3000/api/countries');
+
 
 const appStart = function(){
   requestToRemoteAPI.get(getAllCountries);
@@ -80,16 +83,34 @@ const appStart = function(){
 
   const createDeleteButton = document.querySelector("#deleteButton");
   createDeleteButton.addEventListener("click", handleDeleteButttonClick);
+
+  const mapDiv = document.getElementById("main-map");
+  const glasgow = [55.854979, -4.243281];
+  const zoomLevel = 1;
+  mainMap = new MapWrapper(mapDiv, glasgow, zoomLevel);
 }
+
+
+
+
 
 const getAllCountries = function(allCountries){
   populateDropdown(allCountries);
   const dropdownList = document.querySelector("#countries-dropdown");
   dropdownList.addEventListener("change", function(){
-    const selectedDropdownCountry = allCountries[this.value];
+    selectedDropdownCountry = allCountries[this.value];
+    const selectedCountryCoords = selectedDropdownCountry.latlng;
+    const selectedCountryFlag = selectedDropdownCountry.flag;
+    mainMap.moveTo(selectedCountryCoords, selectedCountryFlag);
+  })
+  const addButton = document.querySelector('#add');
+  addButton.addEventListener("click", function(){
     handleAddToBucketList(selectedDropdownCountry);
   })
+
 }
+
+
 
 const handleAddToBucketList = function(country){
   requestToMongodb.post(country, requestToSaveCountry)
@@ -199,6 +220,39 @@ CountryView.prototype.clear = function(country) {
 }
 
 module.exports = CountryView;
+
+
+/***/ }),
+/* 4 */,
+/* 5 */
+/***/ (function(module, exports) {
+
+const MapWrapper = function(element, coords, zoom){
+   //dynamic API for tiles
+   const osmLayer = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+   //sets parameters of map
+   this.map = L.map(element)
+     .addLayer(osmLayer)
+     .setView(coords, zoom);
+   //add marker on click
+   this.map.on("click", function(event){
+     this.map.flyTo(event.latlng);
+   }.bind(this));
+}
+
+//writes move to function which takes in a co-ord
+MapWrapper.prototype.moveTo = function(latlng, flag){
+   this.map.flyTo(latlng, 6);
+   L.marker(latlng).addTo(this.map).bindPopup(flag).openPopup()
+   //adds in a pop up with hyperlink to the wiki page
+}
+
+//function for moving to current location
+// MapWrapper.prototype.currentLocation = function () {
+//  this.map.locate({setView: true})
+// };
+
+module.exports = MapWrapper;
 
 
 /***/ })
