@@ -38,13 +38,14 @@ const getAllCountries = function(allCountries){
   addButton.addEventListener("click", function(){
     handleAddToBucketList(selectedDropdownCountry);
   })
-
 }
 
 
 
 const handleAddToBucketList = function(country){
-  requestToMongodb.post(country, requestToSaveCountry)
+  requestToMongodb.post(country, requestToSaveCountry);
+  requestToMongodb.get(populateBucketlist);
+
 }
 
 const requestToSaveCountry = function(savedCountry){
@@ -53,6 +54,7 @@ const requestToSaveCountry = function(savedCountry){
 
 const populateBucketlist = function(allCountriesFromMongo){
   const ul = document.querySelector("#selected-countries");
+  ul.innerHTML = "";
   allCountriesFromMongo.forEach(function(country){
     const nameLi = document.createElement('li');
     nameLi.textContent = country.name;
